@@ -80,7 +80,7 @@ class ParsedownExtra extends \ParsedownExtra
     protected function blockFencedCodeComplete($Block)
     {
         $text = $Block['element']['text']['text'];
-        $Block['element']['text']['text'] = \Kadet\Highlighter\highlight($text, $Block['language']);
+        $Block['element']['text']['text'] = \Kadet\Highlighter\highlight($text, $Block['language'], KeyLighter::get()->getFormatter('html'));
 
         return $Block;
     }

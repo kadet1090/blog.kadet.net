@@ -40,6 +40,13 @@ class PostIndexer
 
             $this->register($file);
         }
+    }
+
+    public function save()
+    {
+        uasort($this->_cached, function($a, $b) {
+            return $a['date'] < $b['date'];
+        });
 
         file_put_contents($this->_config['cache'] . '/cache.yml', Yaml::dump($this->_cached));
     }
@@ -82,10 +89,12 @@ class PostIndexer
     {
         $post = Post::fromMarkdownFile($file->getPathname());
 
-        $cache = array_merge($post->getMetadata(), [
+        $cache = array_merge([
+            'slug' => $file->getBasename('.md')
+        ], $post->getMetadata(), [
             'modified' => $file->getMTime(),
             'path'     => $file->getRealPath(),
-            'title'    => $post->getTitle()
+            'title'    => $post->getTitle(),
         ]);
 
         $this->logger()->info(sprintf('Caching %s', $file->getBasename()), $cache);
