@@ -39,6 +39,12 @@ class PaginationGenerator implements PageGenerator
     {
         // We assume that provided posts are in valid order
         for($page = 0; $page * $this->_config['perPage'] < count($this->_posts); $page++) {
+            $path = $directory.'/'.$this->path($page);
+
+            if(!file_exists(dirname($path))) {
+                mkdir(dirname($path), 0644, true);
+            }
+
             file_put_contents(
                 $directory.'/'.$this->path($page),
                 $this->render($page)

@@ -24,7 +24,6 @@ class PostProvider
         {
             $post = Post::fromMarkdownFile($metadata['path']);
 
-
             $this->merge($this->_categories, $metadata['categories'], $post);
             $this->merge($this->_tags, $metadata['tags'], $post);
             $this->_all[] = $post;
@@ -33,7 +32,7 @@ class PostProvider
 
     private function merge(array &$array, array $keys, $value) {
         foreach($keys as $key) {
-            $array[$key] = $value;
+            $array[$key][] = $value;
         }
     }
 
