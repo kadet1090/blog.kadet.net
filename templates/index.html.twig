@@ -31,5 +31,9 @@
             </div>
             {{ post.html()|raw }}
         </article>
+
+        {% if not loop.last %}
+            <hr class="post-separator"/>
+        {% endif %}
     {% endfor %}
 {% endblock %}

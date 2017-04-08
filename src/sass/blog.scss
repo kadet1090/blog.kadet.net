@@ -28,14 +28,16 @@ html {
   display: block;
   margin: 0 auto;
 
-  opacity: .8;
-
   width: 100%;
   max-width: $page-size;
 }
 
 .content-block {
   @include block-content;
+}
+
+hr.post-separator {
+  margin: $post-spacing 0;
 }
 
 article {
@@ -78,10 +80,6 @@ article {
 
     @include block-content;
   }
-
-  padding-bottom: $post-spacing;
-  border-bottom: 1px #eee solid;
-  margin: 0 auto $post-spacing;
 
   pre {
     display: block;

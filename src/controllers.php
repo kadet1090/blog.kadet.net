@@ -12,7 +12,7 @@ $app->get('/', function () use ($app) {
     $posts = [];
 
     $parsedown = new \Kadet\Blog\Helpers\ParsedownExtra();
-    foreach(new DirectoryIterator(__DIR__.'/../posts/') as $file) {
+    foreach(new DirectoryIterator($app['post.dir']) as $file) {
         if($file->getExtension() != 'md') {
             continue;
         }
@@ -20,9 +20,17 @@ $app->get('/', function () use ($app) {
         $posts[$file->getBasename('.'.$file->getExtension())] = \Kadet\Blog\Models\Post::fromMarkdownFile($file->getPathname());
     }
 
-    return $app['twig']->render('index.html.twig', ['posts' => $posts]);
-})
-->bind('homepage');
+    return $app['twig']->render('index.html.twig', [ 'posts' => $posts ]);
+})->bind('homepage');
+
+$app->get('/{post}', function ($post) use ($app) {
+    return $app['twig']->render('post.html.twig', [ 'post' => \Kadet\Blog\Models\Post::fromMarkdownFile($app['post.dir'].'/'.$post.'.md') ]);
+})->bind('post');
+
+$app->get('/{categpry}', function ($post) use ($app) {
+    return $app['twig']->render('post.html.twig', [ 'post' => \Kadet\Blog\Models\Post::fromMarkdownFile($app['post.dir'].'/'.$post.'.md') ]);
+})->bind('post');
+
 
 $app->error(function (\Exception $e, Request $request, $code) use ($app) {
     if ($app['debug']) {

@@ -112,4 +112,12 @@ class Post
     {
         return isset($metadata['date']) && is_int($metadata['date']);
     }
+
+    /**
+     * @return array
+     */
+    public function getMetadata(): array
+    {
+        return $this->_metadata;
+    }
 }
