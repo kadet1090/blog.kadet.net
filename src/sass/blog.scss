@@ -1,0 +1,156 @@
+@import 'https://fonts.googleapis.com/css?family=Lato:100,300,400';
+@import "../../node_modules/bootstrap-sass/assets/stylesheets/_bootstrap";
+@import "../../node_modules/font-awesome/scss/font-awesome";
+@import "../../vendor/kadet/keylighter/Styles/Html/php";
+
+$post-spacing: 4rem;
+$page-size:    50rem;
+
+$block-content: $page-size;
+
+@mixin block-content {
+  margin-left: auto;
+  margin-right: auto;
+
+  max-width: $block-content;
+
+  position: relative;
+
+  @extend .container-fluid;
+}
+
+html {
+  font-size: 12px;
+  position: relative;
+}
+
+.logo {
+  display: block;
+  margin: 0 auto;
+
+  opacity: .8;
+
+  width: 100%;
+  max-width: $page-size;
+}
+
+.content-block {
+  @include block-content;
+}
+
+article {
+  position: relative;
+
+  p {
+    font-family: 'Lato', sans-serif;
+    font-size: 1.25rem;
+    line-height: 1.6;
+    font-weight: 300;
+
+    text-align: justify;
+
+    text-indent: 2rem;
+
+    margin: 2rem auto;
+    max-width: $block-content;
+
+    @include block-content;
+  }
+
+  h1 {
+    font-weight: 400;
+    font-family: 'Lato', sans-serif;
+    font-size: 3rem;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    margin-left: -1rem;
+    position: relative;
+    &::before {
+      content: '#';
+      font-size: larger;
+      position: absolute;
+      top: 0;
+      left: -3rem;
+      opacity: .1;
+    }
+
+
+    @include block-content;
+  }
+
+  padding-bottom: $post-spacing;
+  border-bottom: 1px #eee solid;
+  margin: 0 auto $post-spacing;
+
+  pre {
+    display: block;
+    border: none;
+    border-radius: 0;
+
+    padding: 0;
+
+    code {
+      display: block;
+      white-space: pre;
+
+      border: none;
+      border-radius: 0;
+
+      padding-top: 3rem !important;
+      padding-bottom: 3rem !important;
+
+      margin-bottom: 0;
+
+      @include block-content;
+    }
+  }
+}
+
+.blog--link {
+  display: block;
+}
+
+.post--meta {
+  display: block;
+  ul {
+    margin-bottom: 0;
+  }
+}
+
+img {
+  max-width: 100%;
+}
+
+@media (min-width: 1024px) {
+  html { font-size: 14px; }
+
+  .aside {
+    position: absolute;
+
+    min-width: 14rem;
+    max-width: 25rem;
+
+    &.aside--left  { right: 100% }
+    &.aside--right { left: 100% }
+  }
+
+
+  .post--meta {
+    margin-bottom: 1rem;
+  }
+}
+
+@media (max-width: 1023px) {
+  .post--meta {
+    ul {
+      display: inline-block;
+      margin-left: 0;
+
+      li {
+        display: inline-block;
+        margin-left: 30px;
+      }
+    }
+  }
+}

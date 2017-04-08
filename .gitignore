@@ -1,0 +1,7 @@
+/vendor/
+/node_modules/
+/var/
+/web/css/
+/web/fonts/
+/web/img/
+/.idea/

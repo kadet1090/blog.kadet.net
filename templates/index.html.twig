@@ -1,0 +1,35 @@
+{% extends "layout.html.twig" %}
+
+{% block content %}
+    {% for post in posts %}
+        <article>
+            <h1>{{ post.getTitle() }}</h1>
+            <div class="content-block">
+                <aside class="aside aside--right">
+                    <a class="post--meta" href="#">
+                        <i class="fa fa-calendar-o"></i> {{ post.created.format('d.m.Y') }}
+                    </a>
+
+                    <div class="post--meta">
+                        <strong>Categories</strong>:
+                        <ul class="fa-ul">
+                            {% for category in post.categories %}
+                                <li><i class="fa fa-li fa-inbox"></i>{{ category }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+
+                    <div class="post--meta">
+                        <strong>Tags:</strong>
+                        <ul class="fa-ul">
+                            {% for category in post.tags %}
+                                <li><i class="fa fa-li fa-tag"></i>{{ category }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </aside>
+            </div>
+            {{ post.html()|raw }}
+        </article>
+    {% endfor %}
+{% endblock %}
