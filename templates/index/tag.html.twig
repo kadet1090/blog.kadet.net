@@ -1,0 +1,13 @@
+{% extends "layout.html.twig" %}
+
+{% block content %}
+    <h1>Posts from <i class="fa fa-tag"></i> {{ tag }}</h1>
+    {% include 'posts.html.twig' %}
+{% endblock %}
+
+{% block title %}
+    {{ tag }}
+    {% if pagination is defined and pagination.page > 1 %}
+        - page {{ pagination.page }} -
+    {% endif %}
+{% endblock %}

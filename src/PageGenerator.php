@@ -6,5 +6,5 @@ namespace Kadet\Blog;
 
 interface PageGenerator
 {
-    public function generate(string $directory);
+    public function generate(string $directory, $twig);
 }

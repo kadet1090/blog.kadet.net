@@ -1,0 +1,50 @@
+{% for post in posts %}
+    <article>
+        <h1 class="post--title"><a href="/{{ post.uri }}">{{ post.title }}</a></h1>
+        <div class="content-block">
+            <aside class="aside aside--right">
+                <a class="post--meta" href="/{{ post.uri }}">
+                    <i class="fa fa-calendar-o"></i> {{ post.created.format('d.m.Y') }}
+                </a>
+
+                <div class="post--meta">
+                    <strong>Categories</strong>:
+                    <ul class="fa-ul">
+                        {% for category in post.categories %}
+                            <li><i class="fa fa-li fa-inbox"></i> <a href="/category/{{ category }}">{{ category }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <div class="post--meta">
+                    <strong>Tags:</strong>
+                    <ul class="fa-ul">
+                        {% for tag in post.tags %}
+                            <li><i class="fa fa-li fa-tag"></i> <a href="/tag/{{ tag }}">{{ tag }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </aside>
+        </div>
+        {{ post.html()|raw }}
+    </article>
+
+    {% if not loop.last %}
+        <hr class="post-separator"/>
+    {% endif %}
+{% endfor %}
+
+{% if pagination is defined %}
+<div class="row content-block">
+    <div class="col-sm-6">
+        {% if pagination.previousPage %}
+            <a href="{{ pagination.previousPage }}" class="btn btn-link btn-block">&laquo; older</a>
+        {% endif %}
+    </div>
+    <div class="col-sm-6">
+        {% if pagination.nextPage %}
+            <a href="{{ pagination.nextPage }}" class="btn btn-link btn-block">newer &raquo;</a>
+            {% endif %}
+    </div>
+</div>
+{% endif %}

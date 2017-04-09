@@ -1,0 +1,11 @@
+{% extends "layout.html.twig" %}
+
+{% block content %}
+    {% include 'posts.html.twig' %}
+{% endblock %}
+
+{% block title %}
+    {% if pagination is defined and pagination.page > 1 %}
+        page {{ pagination.page }}
+    {% endif %}
+{% endblock %}

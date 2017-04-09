@@ -35,10 +35,12 @@ class PaginationGenerator implements PageGenerator
     }
 
 
-    public function generate(string $directory)
+    public function generate(string $directory, $twig)
     {
         // We assume that provided posts are in valid order
         for($page = 0; $page * $this->_config['perPage'] < count($this->_posts); $page++) {
+            $this->_current = $page + 1;
+
             $path = $directory.'/'.$this->path($page);
 
             if(!file_exists(dirname($path))) {
@@ -46,8 +48,8 @@ class PaginationGenerator implements PageGenerator
             }
 
             file_put_contents(
-                $directory.'/'.$this->path($page),
-                $this->render($page)
+                $directory.'/'.$this->path($page + 1),
+                $this->render($page, $twig)
             );
         }
     }
@@ -62,7 +64,7 @@ class PaginationGenerator implements PageGenerator
         return $this->_current;
     }
 
-    public function getPreviousPageLink()
+    public function getPreviousPage()
     {
         if($this->_current == 1) {
             return false;
@@ -73,7 +75,7 @@ class PaginationGenerator implements PageGenerator
         return $this->path($this->_current - 1);
     }
 
-    public function getNextPageLink()
+    public function getNextPage()
     {
         if(($this->_current+1)*$this->_config['perPage'] > count($this->_posts)) {
             return false;
@@ -84,13 +86,14 @@ class PaginationGenerator implements PageGenerator
 
     private function path($page)
     {
-        return $this->_config['prefix'].sprintf($this->_config['format'][$page !== 0], $page + 1);
+        return $this->_config['prefix'].sprintf($this->_config['format'][$page !== 1], $page);
     }
 
-    private function render($page)
+    private function render($page, $twig)
     {
         $renderer = $this->_renderer;
         return $renderer(
+            $twig,
             array_slice($this->_posts, $page * $this->getPerPage(), $this->getPerPage()),
             $this
         );

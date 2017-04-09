@@ -2,10 +2,10 @@
 
 {% block content %}
 <article>
-    <h1>{{ post.getTitle() }}</h1>
+    <h1>{{ post.title }}</h1>
     <div class="content-block">
         <aside class="aside aside--right">
-            <a class="post--meta" href="#">
+            <a class="post--meta" href="{{ post.uri }}">
                 <i class="fa fa-calendar-o"></i> {{ post.created.format('d.m.Y') }}
             </a>
 

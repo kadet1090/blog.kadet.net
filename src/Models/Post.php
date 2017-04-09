@@ -27,6 +27,9 @@ class Post
     /** @var string */
     private $_content;
 
+    /** @var string */
+    private $_slug;
+
     public function meta($key)
     {
         return $this->_metadata[$key] ?? false;
@@ -69,6 +72,15 @@ class Post
         return $this->_metadata['tags'] ?? [];
     }
 
+    public function getSlug()
+    {
+        return $this->_slug;
+    }
+
+    public function getUri()
+    {
+        return sprintf("%d/%s.html", $this->getCreated()->format('Y'), $this->getSlug());
+    }
 
     /**
      * @param $file
@@ -95,6 +107,7 @@ class Post
             $post->_title = substr($title, 2);
             $post->_created = DateTime::createFromFormat('U', $metadata['date']);
             $post->_content = ParsedownExtra::instance()->parse($markdown);
+            $post->_slug    = $metadata['slug'] ?? basename($file, '.md');
 
             return $post;
         } catch (ParseException $exception) {
