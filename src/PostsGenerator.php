@@ -24,7 +24,7 @@ class PostsGenerator implements PageGenerator
         foreach ($this->_posts as $post) {
             $path = $directory.DIRECTORY_SEPARATOR.$post->getUri();
             if(!file_exists(dirname($path))) {
-                mkdir(dirname($path), 0644, true);
+                mkdir(dirname($path), 0755, true);
             }
 
             file_put_contents($path, $twig->render('post.html.twig', [ 'post' => $post ]));

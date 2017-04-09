@@ -44,7 +44,7 @@ class PaginationGenerator implements PageGenerator
             $path = $directory.'/'.$this->path($page);
 
             if(!file_exists(dirname($path))) {
-                mkdir(dirname($path), 0644, true);
+                mkdir(dirname($path), 0755, true);
             }
 
             file_put_contents(
