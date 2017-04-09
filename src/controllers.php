@@ -20,7 +20,7 @@ $app->get('/', function () use ($app) {
         $posts[$file->getBasename('.'.$file->getExtension())] = \Kadet\Blog\Models\Post::fromMarkdownFile($file->getPathname());
     }
 
-    return $app['twig']->render('index.html.twig', [ 'posts' => $posts ]);
+    return $app['twig']->render('index/index.html.twig', [ 'posts' => $posts ]);
 })->bind('homepage');
 
 $app->get('/{post}', function ($post) use ($app) {
