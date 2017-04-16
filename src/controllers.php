@@ -9,28 +9,35 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 //Request::setTrustedProxies(array('127.0.0.1'));
 
 $app->get('/', function () use ($app) {
-    $posts = [];
+    /** @var \Kadet\Blog\PostRepository $repository */
+    $repository = $app['post.repository'];
 
-    $parsedown = new \Kadet\Blog\Helpers\ParsedownExtra();
-    foreach(new DirectoryIterator($app['post.dir']) as $file) {
-        if($file->getExtension() != 'md') {
-            continue;
-        }
+    $pagination = new \Kadet\Blog\PostPagination($repository->getAll());
 
-        $posts[$file->getBasename('.'.$file->getExtension())] = \Kadet\Blog\Models\Post::fromMarkdownFile($file->getPathname());
-    }
-
-    return $app['twig']->render('index/index.html.twig', [ 'posts' => $posts ]);
+    return $app['twig']->render('index/index.html.twig', [
+        'posts' => $pagination->get(),
+        'pagination' => $pagination
+    ]);
 })->bind('homepage');
 
-$app->get('/{post}', function ($post) use ($app) {
-    return $app['twig']->render('post.html.twig', [ 'post' => \Kadet\Blog\Models\Post::fromMarkdownFile($app['post.dir'].'/'.$post.'.md') ]);
-})->bind('post');
+$app->get('/page-{page}.html', function ($page) use ($app) {
+    /** @var \Kadet\Blog\PostRepository $repository */
+    $repository = $app['post.repository'];
 
-$app->get('/{categpry}', function ($post) use ($app) {
-    return $app['twig']->render('post.html.twig', [ 'post' => \Kadet\Blog\Models\Post::fromMarkdownFile($app['post.dir'].'/'.$post.'.md') ]);
-})->bind('post');
+    $pagination = new \Kadet\Blog\PostPagination($repository->getAll());
+    $pagination->set($page);
 
+    return $app['twig']->render('index/index.html.twig', [
+        'posts' => $pagination->get(),
+        'pagination' => $pagination
+    ]);
+})->bind('page');
+
+$app->get('/{year}/{post}.html', function ($year, $post) use ($app) {
+    return $app['twig']->render('post.html.twig', [
+        'post' => \Kadet\Blog\Models\Post::fromMarkdownFile($app['post.dir'].'/'.$post.'.md')
+    ]);
+})->bind('post');
 
 $app->error(function (\Exception $e, Request $request, $code) use ($app) {
     if ($app['debug']) {

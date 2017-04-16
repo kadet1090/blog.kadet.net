@@ -14,6 +14,7 @@ class PostIndexer
     private $_config;
     private $_cached;
 
+    private $_indexed = [];
 
     /**
      * PostIndexer constructor.
@@ -23,11 +24,11 @@ class PostIndexer
     public function __construct($config = [])
     {
         $this->_config = array_merge([
-            'cache'  => __DIR__ . '/../var',
+            'cache'  => __DIR__ . '/../var/cache.yml',
             'logger' => new NullLogger(),
         ], $config);
 
-        $this->_cached     = $this->load('cache');
+        $this->_cached     = $this->load();
     }
 
     public function index($dir)
@@ -40,25 +41,25 @@ class PostIndexer
 
             $this->register($file);
         }
+
+        uasort($this->_indexed, function($a, $b) {
+            return $a['date'] < $b['date'];
+        });
     }
 
     public function save()
     {
-        uasort($this->_cached, function($a, $b) {
-            return $a['date'] < $b['date'];
-        });
-
-        file_put_contents($this->_config['cache'] . '/cache.yml', Yaml::dump($this->_cached));
+        file_put_contents($this->_config['cache'], Yaml::dump($this->all()));
     }
 
     private function register(\SplFileInfo $file)
     {
-        if ($this->cached($file)) {
+        if ($cached = $this->cached($file)) {
+            $this->_indexed[] = $cached;
             return;
         }
 
-        $post = Post::fromMarkdownFile($file->getRealPath());
-        if(!$post) {
+        if(($post = Post::fromMarkdownFile($file->getRealPath())) === false) {
             return;
         }
 
@@ -74,8 +75,9 @@ class PostIndexer
         }
 
         if ($this->_cached[ $hash ]['modified'] !== $file->getMTime()) {
-            $this->logger()->info(sprintf('Found cached %s, but modification time differs, updating.',
-                $file->getBasename()));
+            $this->logger()->info(
+                sprintf('Found cached %s, but modification time differs, updating.', $file->getBasename())
+            );
 
             return false;
         }
@@ -98,13 +100,17 @@ class PostIndexer
         ]);
 
         $this->logger()->info(sprintf('Caching %s', $file->getBasename()), $cache);
-
-        $this->_cached[md5($file->getRealPath())] = $cache;
+        $this->_indexed[md5($file->getRealPath())] = $cache;
     }
 
-    private function load($thing)
+    public function all()
     {
-        $file = $this->_config['cache'] . '/' . $thing . '.yml';
+        return $this->_indexed;
+    }
+
+    private function load()
+    {
+        $file = $this->_config['cache'];
         if (!file_exists($file)) {
             return [];
         }

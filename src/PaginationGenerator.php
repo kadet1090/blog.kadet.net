@@ -4,98 +4,48 @@
 namespace Kadet\Blog;
 
 
+use Kadet\Blog\Helpers\Pagination;
+
 class PaginationGenerator implements PageGenerator
 {
-    private $_config = [
-        'perPage' => 5,
-        'prefix'  => null,
-        'format'  => ['index.html', 'page-%d.html'],
-    ];
-
-    private $_posts    = [];
     /** @var callable|null */
-    private $_renderer = null;
-
-    private $_current = null;
+    private $_renderer   = null;
+    private $_pagination = null;
 
     /**
      * PaginationGenerator constructor.
      *
-     * @param array    $posts
-     * @param array    $config
-     * @param callable $renderer
-     *
-     * @internal param int $perPage
+     * @param Pagination $pagination
+     * @param callable   $renderer
      */
-    public function __construct(array $posts, callable $renderer, array $config = [])
+    public function __construct(Pagination $pagination, callable $renderer)
     {
-        $this->_config   = array_merge($this->_config, $config);
-        $this->_posts    = $posts;
-        $this->_renderer = $renderer;
+        $this->_pagination = $pagination;
+        $this->_renderer   = $renderer;
     }
-
 
     public function generate(string $directory, $twig)
     {
         // We assume that provided posts are in valid order
-        for($page = 0; $page * $this->_config['perPage'] < count($this->_posts); $page++) {
-            $this->_current = $page + 1;
+        for($page = 0, $count = $this->_pagination->getPageCount(); $page < $count; $page++) {
+            $this->_pagination->set($page + 1);
 
-            $path = $directory.'/'.$this->path($page);
-
+            $path = $directory.'/'.$this->_pagination->getUri();
             if(!file_exists(dirname($path))) {
                 mkdir(dirname($path), 0755, true);
             }
 
-            file_put_contents(
-                $directory.'/'.$this->path($page + 1),
-                $this->render($page, $twig)
-            );
+            file_put_contents($path, $this->render($twig));
         }
     }
 
-    public function getPerPage()
+    public function getPagination()
     {
-        return $this->_config['perPage'];
+        return $this->_pagination;
     }
 
-    public function getPage()
+    private function render($twig)
     {
-        return $this->_current;
-    }
-
-    public function getPreviousPage()
-    {
-        if($this->_current == 1) {
-            return false;
-        } elseif($this->_current == 2) {
-            return $this->_config['prefix'];
-        }
-
-        return $this->path($this->_current - 1);
-    }
-
-    public function getNextPage()
-    {
-        if(($this->_current+1)*$this->_config['perPage'] > count($this->_posts)) {
-            return false;
-        }
-
-        return $this->path($this->_current + 1);
-    }
-
-    private function path($page)
-    {
-        return $this->_config['prefix'].sprintf($this->_config['format'][$page !== 1], $page);
-    }
-
-    private function render($page, $twig)
-    {
-        $renderer = $this->_renderer;
-        return $renderer(
-            $twig,
-            array_slice($this->_posts, $page * $this->getPerPage(), $this->getPerPage()),
-            $this
-        );
+        return ($this->_renderer)($twig, $this->_pagination->get(), $this);
     }
 }
